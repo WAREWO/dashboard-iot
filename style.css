@@ -1,0 +1,110 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Memberikan background color pada body */
+body{
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* memberi css pada header */
+header{
+    background-color:#2c3e50;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* memberikan ukuran font pada header 1 */
+header h1{
+    font-size: 1.5rem;
+}
+/* layout buat nanti per tampilan enak dilihat */
+.grid-container{
+    display: grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    background-color: gray;
+}
+/* desain kartu? */
+.card{
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+}
+/* Membuat hover ketika masing masing desain kartunya di tunjuk */
+.card:hover{
+    transform: translateY(-3px);
+}
+
+.sensor-card h3{
+    color: #7f8c8d;
+    font-size: 1rem;
+
+}
+.sensor-value{
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2980b9;
+}
+.unit{
+    font-size: 2rem;
+    color: #95a5a6;
+    margin-left: 5px;
+}
+.info{
+    margin-top: 10px;
+    color: #27ae60;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.chart-card{
+    grid-column: 1/-1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #95a5a6;
+    border: 2px dashed #bdc3c7;
+}
+
+button{
+    background-color: #3498db;
+    color:white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer; 
+    font-weight: bold;
+    transition: background 0.3s;
+}
+button:hover {
+    background-color: #2980b9;
+}
+.status {
+    font-weight: bold;
+    background: rgba(255,255,255,0.2);
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+.tools-card{
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #95a5a6;
+}
+.type-value{
+    font-size: 3rem;
+    text-align: center;
+    font-weight: bold;
+    color: #2980b9;
+    padding-top: 10px;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header atau Navbar -->
+    <header>
+        <h1>Dashbord Monitoring</h1>
+        <span id="status_server" class="status">Offline</span>
+    </header>
+    <!-- Main content -->
+     <main class = "grid-container">
+        <!-- Tampilan Sensor suhu -->
+        <div class="card sensor-card">
+            <h3>Suhu Ruangan</h3>
+            <p class="sensor-value"><span id = "suhu">.....</span><span id="celcius" class="unit">°C</span></p>
+            <p class="info">Status: Normal</p>
+        </div>
+        <!-- tampilan sensor kelembapan -->
+        <div class="card sensor-card">
+            <h3>Kelembapan Ruangan</h3>
+            <p class="sensor-value"><span id = "kelembapan">......</span> <span class="unit">%</span></p>
+            <p class="info">Status: Normal</p>
+        </div>
+        <!-- Membuat tampilan untuk Tipe Alat yang digunakan -->
+         <div class="card tools-card">
+            <h3>Device:</h3>
+            <p id="alat" class="type-value">ESP 8266</p>
+        </div>
+        <!-- Tampilan grafik -->
+         <div class="card chart-card">
+            <h3> Grafik suhu secara real time</h3>
+            <p> Grafik akan ditampilkan disini</p>
+         </div>
+         <!-- Menampilkan toggle control (button) -->
+          <div class="card control-card">
+            <h3 id="pengontrol">Kontrol device</h3>
+            <button id="toogle">Toggle Lampu</button>
+          </div>
+     </main>
+     <!-- memanggil library mqtt dari (CDN)-->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.8/mqtt.min.js"></script>
+     <!-- memanggil javascript kita sendiri -->
+     <script src="app.js"></script>
+</body>
+</html>
