@@ -15,6 +15,22 @@ status_server.innerText = "Connecting.....";
 // menghubungkan dengan mqtt
 const client = mqtt.connect(brokerUrl,options);
 
+// mendapatkan id dari checkbox
+const checkBox = document.getElementById('relay1');
+
+// kita tambahkana listener
+checkBox.addEventListener('change',function(){
+    if(checkBox.checked){
+        client.publish('iot/esp32/relay',"ON");
+        console.log("berhasil mengirimkan sinyal nyala");
+    }
+    else{
+        client.publish('iot/esp32/relay',"OFF");
+        console.log("berhasil mengirimkan sinyal mati");
+    }
+        
+});
+
 // function ketika mqtt sudah berhasil terkoneksikan
 client.on('connect',function(){
     console.log("Berhasil terhubung dengan mqtt");

@@ -3,6 +3,7 @@
 #include <ESP8266WiFi.h>
 
 #define DHTPIN D7// Digital pin connected to the DHT sensor
+#define PINRELAY D5// Digital pin untuk mengontrol relay
 
 #define DHTTYPE DHT11
 
@@ -47,11 +48,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  String pesan = "";
   // untuk membaca charnya apa messagenya karena di c++ itu dia gabisa berupa string
   for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
+    pesan += (char)payload[i];
   }
+  Serial.print("pesan masuk: " + pesan);
   Serial.println();
+  
+  if (pesan == "ON"){
+    digitalWrite(PINRELAY, HIGH);
+  }
+  else if(pesan == "OFF"){
+    digitalWrite(PINRELAY, LOW);
+  }
 
 }
 
@@ -67,6 +77,7 @@ void reconnect() {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish("iot/esp32/dht11", "hello world");
+      client.subscribe("iot/esp32/relay");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -84,6 +95,8 @@ void setup() {
   dht.begin();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+  pinMode(PINRELAY, OUTPUT);
+  digitalWrite(PINRELAY, LOW);
 }
 
 void loop() {
