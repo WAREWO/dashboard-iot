@@ -56,11 +56,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("pesan masuk: " + pesan);
   Serial.println();
   
+  // if else agar topiknya tidak terganti fokus di status relay
   if (pesan == "ON"){
     digitalWrite(PINRELAY, HIGH);
   }
   else if(pesan == "OFF"){
     digitalWrite(PINRELAY, LOW);
+  }
+  else if(pesan == "REQUEST"){
+    int kondisiSekarang = digitalRead(PINRELAY);
+    if(kondisiSekarang == HIGH){
+      client.publish("iot/esp32/relay/status", "ON");
+    }
+    else{
+      client.publish("iot/esp32/relay/status", "OFF");
+    }
   }
 
 }
@@ -77,6 +87,7 @@ void reconnect() {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish("iot/esp32/dht11", "hello world");
+      // subscribe ke relay untuk mendapat info dari javascript klo relay harus on
       client.subscribe("iot/esp32/relay");
     } else {
       Serial.print("failed, rc=");

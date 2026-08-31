@@ -79,6 +79,7 @@ client.on('connect',function(){
             console.log("Tidak bisa terkoneksi karena :" + error);
         }
     });
+    client.publish('iot/esp32/relay/status','REQUEST');
 });
 
 // mendengarkan pesan masuk: ini jalan ketika ada data masuk ke topik yang kita subscribe
@@ -92,10 +93,11 @@ client.on('message',function(topik,message){
     const menit = sekarang.getMinutes();
     let waktuSekarang = jam + ":" + menit + ":" + detik;
     console.log("Pesan diterima dari topik " + topik + ":" + pesanMasuk);
-
     // merubah tampilan html berdasarkan pesan yang masuk dari mqtt
     var elementSuhu = document.getElementById("suhu");
     var elementKelembapan = document.getElementById("kelembapan");
+    // subscribe ke status relay
+    client.subscribe('iot/esp32/relay/status');
     if (topik === 'iot/esp32/dht11/suhu') {
         elementSuhu.innerText = pesanMasuk;
         let suhuMasuk = parseFloat(pesanMasuk);
@@ -107,6 +109,15 @@ client.on('message',function(topik,message){
         let kelembapanMasuk = parseFloat(pesanMasuk);
         myChart.data.datasets[1].data.push(kelembapanMasuk);
         // myChart.data.labels.push(waktuSekarang);
+    }
+    // LOGIC AGAR TIDAK ADA BUG ON OFF
+    if(topik === 'iot/esp32/relay/status'){
+        if(pesanMasuk === "ON"){
+            checkBox.checked = true;
+        }
+        else if(pesanMasuk === "OFF"){
+            checkBox.checked = false;
+        }
     }
     if(myChart.data.labels.length > 10){
         myChart.data.datasets[0].data.shift();
