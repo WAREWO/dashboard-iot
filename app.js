@@ -1,24 +1,42 @@
 // variable untuk menyimpan alamat broker hivemq
 const brokerUrl = 'wss://broker.hivemq.com:8884/mqtt';
-
 // membuat client id
 const options = {
     clientId: 'webDashboard_'+ Math.random().toString(16).substring(2,8)
 };
-
 // menyimpan id status agar bisa merubah online menjadi connecting....
 const status_server = document.getElementById('status_server');
-
 // merubah online menjadi connecting.....
 status_server.innerText = "Connecting.....";
-
 // menghubungkan dengan mqtt
 const client = mqtt.connect(brokerUrl,options);
-
 // mendapatkan id dari checkbox
 const checkBox = document.getElementById('relay1');
+// ini untuk mendapat id canvas
+const canvasSuhu = document.getElementById('grafikSuhu');
+var indikasiSuhu = document.getElementById('suhu');
 
-
+// untuk membuat chart
+const myChart = new Chart(canvasSuhu,{
+    type: "line",
+    data:{
+        labels: [],
+        datasets: [
+        {
+            label: "Suhu (C)",
+            data: [],
+            borderColor: "rgba(255, 99, 132, 1)",//warna untuk suhu
+        },
+        {
+            label: "Kelembapan (%)",
+            data: [],
+            borderColor: "rgba(54, 162, 235, 1)",//warna untuk suhu
+        }]
+    },
+    options: {
+        maintainAspectRatio: false // INI DIA KUNCINYA
+    }
+})
 
 // kita tambahkana listener
 checkBox.addEventListener('change',function(){
@@ -36,7 +54,7 @@ checkBox.addEventListener('change',function(){
         gantiStatusDevice.style.color = "#bd2424";
         gantiStatusDevice.innerText = "Status: Mati";
     }
-        
+    
 });
 
 // function ketika mqtt sudah berhasil terkoneksikan
@@ -65,8 +83,14 @@ client.on('connect',function(){
 
 // mendengarkan pesan masuk: ini jalan ketika ada data masuk ke topik yang kita subscribe
 client.on('message',function(topik,message){
+    // mengambil object javaScript untuk waktu(jam,menit,detik)
+    const sekarang = new Date();
     // merubah karena massage itu byte kita ubah jadi string
     var pesanMasuk = message.toString();
+    const jam = sekarang.getHours();
+    const detik = sekarang.getSeconds();
+    const menit = sekarang.getMinutes();
+    let waktuSekarang = jam + ":" + menit + ":" + detik;
     console.log("Pesan diterima dari topik " + topik + ":" + pesanMasuk);
 
     // merubah tampilan html berdasarkan pesan yang masuk dari mqtt
@@ -74,13 +98,21 @@ client.on('message',function(topik,message){
     var elementKelembapan = document.getElementById("kelembapan");
     if (topik === 'iot/esp32/dht11/suhu') {
         elementSuhu.innerText = pesanMasuk;
+        let suhuMasuk = parseFloat(pesanMasuk);
+        myChart.data.datasets[0].data.push(suhuMasuk);
+        myChart.data.labels.push(waktuSekarang);
     }
     else if(topik === 'iot/esp32/dht11/hum'){
         elementKelembapan.innerText = pesanMasuk;
+        let kelembapanMasuk = parseFloat(pesanMasuk);
+        myChart.data.datasets[1].data.push(kelembapanMasuk);
+        // myChart.data.labels.push(waktuSekarang);
     }
+    if(myChart.data.labels.length > 10){
+        myChart.data.datasets[0].data.shift();
+        myChart.data.datasets[1].data.shift();
+        myChart.data.labels.shift();
+    }
+        myChart.update();
 });
-
-var indikasiSuhu = document.getElementById('suhu');
-
-
 

@@ -68,7 +68,7 @@ header h1{
 }
 .chart-card{
     grid-column: 1/-1;
-    min-height: 200px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;

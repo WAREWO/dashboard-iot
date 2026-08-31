@@ -34,7 +34,7 @@
         <!-- Tampilan grafik -->
          <div class="card chart-card">
             <h3> Grafik suhu secara real time</h3>
-            <p> Grafik akan ditampilkan disini</p>
+            <canvas id="grafikSuhu"></canvas>
          </div>
          <!-- Menampilkan toggle control (button) -->
           <div class="card control-card">
@@ -48,6 +48,8 @@
      </main>
      <!-- memanggil library mqtt dari (CDN)-->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.2.8/mqtt.min.js"></script>
+     <!-- memanggil chart -->
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      <!-- memanggil javascript kita sendiri -->
      <script src="app.js"></script>
 </body>
