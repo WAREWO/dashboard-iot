@@ -18,15 +18,23 @@ const client = mqtt.connect(brokerUrl,options);
 // mendapatkan id dari checkbox
 const checkBox = document.getElementById('relay1');
 
+
+
 // kita tambahkana listener
 checkBox.addEventListener('change',function(){
+    // mendapatkan id dari status menyala or tidaknya
+    var gantiStatusDevice = document.getElementById('infoDevice');
     if(checkBox.checked){
         client.publish('iot/esp32/relay',"ON");
         console.log("berhasil mengirimkan sinyal nyala");
+        gantiStatusDevice.style.color = "#27ae60";
+        gantiStatusDevice.innerText = "Status: Nyala";
     }
     else{
         client.publish('iot/esp32/relay',"OFF");
         console.log("berhasil mengirimkan sinyal mati");
+        gantiStatusDevice.style.color = "#bd2424";
+        gantiStatusDevice.innerText = "Status: Mati";
     }
         
 });

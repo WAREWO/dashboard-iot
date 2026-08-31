@@ -169,4 +169,9 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-
+.device{
+    margin-top: 10px;
+    color: #bd2424;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
