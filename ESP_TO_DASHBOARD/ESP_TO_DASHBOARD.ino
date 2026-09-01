@@ -49,6 +49,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print(topic);
   Serial.print("] ");
   String pesan = "";
+  String topikMasuk = String(topic);
   // untuk membaca charnya apa messagenya karena di c++ itu dia gabisa berupa string
   for (int i = 0; i < length; i++) {
     pesan += (char)payload[i];
@@ -56,20 +57,23 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("pesan masuk: " + pesan);
   Serial.println();
   
-  // if else agar topiknya tidak terganti fokus di status relay
+  // if else jika on relay high dan sebaliknya
   if (pesan == "ON"){
     digitalWrite(PINRELAY, HIGH);
   }
   else if(pesan == "OFF"){
     digitalWrite(PINRELAY, LOW);
   }
-  else if(pesan == "REQUEST"){
-    int kondisiSekarang = digitalRead(PINRELAY);
-    if(kondisiSekarang == HIGH){
-      client.publish("iot/esp32/relay/status", "ON");
-    }
-    else{
-      client.publish("iot/esp32/relay/status", "OFF");
+  // mendapatkan pesan dari request semisal di dapati pin d5 sedang high maka dikirimlah on ke mqtt dan sebaliknya
+  if (strcmp(topic, "iot/esp32/relay/status") == 0){
+    if(pesan == "REQUEST"){
+      int kondisiSekarang = digitalRead(PINRELAY);
+      if(kondisiSekarang == HIGH){
+        client.publish("iot/esp32/relay/status", "ON");
+      }
+      else{
+        client.publish("iot/esp32/relay/status", "OFF");
+      }
     }
   }
 
@@ -89,6 +93,8 @@ void reconnect() {
       client.publish("iot/esp32/dht11", "hello world");
       // subscribe ke relay untuk mendapat info dari javascript klo relay harus on
       client.subscribe("iot/esp32/relay");
+      // tambahan subscribe ke iot esp32 status
+      client.subscribe("iot/esp32/relay/status");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -123,6 +129,8 @@ void loop() {
     // Read temperature as Celsius (the default)
     float t = dht.readTemperature();
 
+    // membuat String untuk format JSON jadi agar nanti 1 Topic saja
+
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t)) {
       Serial.println(F("Failed to read from DHT sensor!"));
@@ -133,13 +141,18 @@ void loop() {
     // untuk membaca kelembapan dan merubahnya dalam bentruk string
     String humidityString = String(h);
 
+    String pesanJson = "{\"suhu\":" + String(t) + ",\"hum\":" + String(h) +"}";
+
       ++value;
       // snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
-      Serial.print("Publish message: ");
-      Serial.println(suhuString);
-      Serial.println(humidityString);
-      client.publish("iot/esp32/dht11/suhu", suhuString.c_str());
-      client.publish("iot/esp32/dht11/hum",humidityString.c_str());
+      Serial.println("Publish message: ");
+      Serial.println("suhu: " + suhuString);
+      Serial.println("Humidity: " + humidityString);
+
+      client.publish("iot/esp32/dht11/data", pesanJson.c_str());
+      // ada update menggunakan 1 client.publish saja (menghemat topic)
+      // client.publish("iot/esp32/dht11/suhu", suhuString.c_str());
+      // client.publish("iot/esp32/dht11/hum",humidityString.c_str());
   }
 
 }

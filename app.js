@@ -63,22 +63,17 @@ client.on('connect',function(){
     status_server.innerText = "Online";
     status_server.style.color = "#2ecc71"; //mengganti warna status server
     // subscribe ke mqtt 
-    client.subscribe('iot/esp32/dht11/suhu',function(error){
+    client.subscribe('iot/esp32/dht11/data',function(error){
         if(!error){
-            console.log("MQTT berhasil terkoneksikan dengan suhu!!!!");
+            console.log("MQTT berhasil terkoneksikan dengan suhu dan kelembapan");
         }
         else{
             console.log("Tidak bisa terkoneksi karena :" + error);
         }
     });
-    client.subscribe('iot/esp32/dht11/hum',function(error){
-        if(!error){
-            console.log("MQTT berhasil terkoneksikan dengan kelembapan!!!!");
-        }
-        else{
-            console.log("Tidak bisa terkoneksi karena :" + error);
-        }
-    });
+    // subscribe ke status relay
+    client.subscribe('iot/esp32/relay/status');
+    // publish ke topik status relay agar ketika web di refresh bisa langsung mendapatkan status relay
     client.publish('iot/esp32/relay/status','REQUEST');
 });
 
@@ -96,20 +91,20 @@ client.on('message',function(topik,message){
     // merubah tampilan html berdasarkan pesan yang masuk dari mqtt
     var elementSuhu = document.getElementById("suhu");
     var elementKelembapan = document.getElementById("kelembapan");
-    // subscribe ke status relay
-    client.subscribe('iot/esp32/relay/status');
-    if (topik === 'iot/esp32/dht11/suhu') {
-        elementSuhu.innerText = pesanMasuk;
-        let suhuMasuk = parseFloat(pesanMasuk);
+    if (topik === 'iot/esp32/dht11/data') {
+        // mengambil data json menggunakan object ini
+        let dataSensor = JSON.parse(pesanMasuk);
+        // merubah suhu maupun kelembapan di html
+        elementSuhu.innerText = dataSensor.suhu;
+        elementKelembapan.innerText = dataSensor.hum;
+        // menambahkan data ke chart
+        let suhuMasuk = parseFloat(dataSensor.suhu);
+        let kelembapanMasuk = parseFloat(dataSensor.hum);
         myChart.data.datasets[0].data.push(suhuMasuk);
+        myChart.data.datasets[1].data.push(kelembapanMasuk);
         myChart.data.labels.push(waktuSekarang);
     }
-    else if(topik === 'iot/esp32/dht11/hum'){
-        elementKelembapan.innerText = pesanMasuk;
-        let kelembapanMasuk = parseFloat(pesanMasuk);
-        myChart.data.datasets[1].data.push(kelembapanMasuk);
-        // myChart.data.labels.push(waktuSekarang);
-    }
+
     // LOGIC AGAR TIDAK ADA BUG ON OFF
     if(topik === 'iot/esp32/relay/status'){
         if(pesanMasuk === "ON"){
