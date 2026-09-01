@@ -107,11 +107,16 @@ client.on('message',function(topik,message){
 
     // LOGIC AGAR TIDAK ADA BUG ON OFF
     if(topik === 'iot/esp32/relay/status'){
+        var gantiStatusDevice = document.getElementById('infoDevice');
         if(pesanMasuk === "ON"){
             checkBox.checked = true;
+            gantiStatusDevice.style.color = "#2ecc71";
+            gantiStatusDevice.innerText = "Status: Nyala";
         }
         else if(pesanMasuk === "OFF"){
             checkBox.checked = false;
+            gantiStatusDevice.style.color = "#bd2424";
+            gantiStatusDevice.innerText = "Status: Mati";
         }
     }
     if(myChart.data.labels.length > 10){
